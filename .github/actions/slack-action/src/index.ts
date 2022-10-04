@@ -661,4 +661,6 @@ function toPromise<E, T>(task: Task<E, T>) {
 export const slackZenQuote = async (event: unknown) =>
   toPromise(decodeEvent(event).andThen(messageIfApplicable));
 
-slackZenQuote(sampleEvent);
+slackZenQuote(sampleEvent).catch((e) => {
+  console.log(e);
+});
