@@ -1,0 +1,17 @@
+name: Pull Request Workflow
+on:
+  pull_request:
+    types: [unlabeled]
+env:
+  GITHUB_EVENT_PATH: /github/workflow/event.json
+
+jobs:
+  printJob:
+    name: Print event
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
