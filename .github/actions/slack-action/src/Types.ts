@@ -9,7 +9,7 @@ export const quoteDecoder: Decoder<ZenQuote> = succeed({})
 
 type SlackNotifierError = HttpError | SlackNotifierRequestFailed;
 
-export type HandlerFail = MissingVarError | SlackNotifierError;
+export type HandlerFail = MissingVarError | SlackNotifierError | EventDecodeFailed;
 
 export type SuccessLambdaResult = SlackNotificationSuccess;
 
@@ -21,6 +21,16 @@ export interface SlackNotifierRequestFailed {
 export const slackNotifierRequestFailed = (err: HttpError): SlackNotifierRequestFailed => ({
   kind: 'slack-notifier-request-failed',
   message: err.kind,
+});
+
+export interface EventDecodeFailed {
+  kind: 'event-decode-failed';
+  message: string;
+}
+
+export const eventDecodeFailed = (err: string): EventDecodeFailed => ({
+  kind: 'event-decode-failed',
+  message: err,
 });
 
 export interface SlackNotificationSuccess {
@@ -43,6 +53,7 @@ export interface SlackMessage {
   slackUser: string;
   slackWebhookUrl: string;
   zenQuote: ZenQuote;
+  github: Github;
 }
 
 export interface ZenQuote {
@@ -70,7 +81,7 @@ export const githubDecoder: Decoder<Github> = succeed({})
   .assign('eventG', field('event', eventGDecoder))
   .assign('pullRequest', field('pull_request', pullRequestDecoder));
 
-interface Github {
+export interface Github {
   eventG: EventG;
   pullRequest: PullRequest;
 }

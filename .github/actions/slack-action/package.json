@@ -1,7 +1,7 @@
 {
   "name": "github-slack-tooling",
   "version": "1.0.0",
-  "description": "Fetches an inspirational quote and posts to Slack.",
+  "description": "Notifies developer when code review is complete on PR",
   "main": "src/index.ts",
   "author": "John Costa",
   "license": "MIT",

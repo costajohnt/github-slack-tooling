@@ -2,7 +2,8 @@ import { readVarT } from '@execonline-inc/environment';
 import { get, HttpError, post, toHttpTask } from 'ajaxios';
 import Task from 'taskarian';
 import {
-  GithubEvent,
+  githubDecoder,
+  Github,
   HandlerFail,
   quoteDecoder,
   SlackMessage,
@@ -12,7 +13,15 @@ import {
   slackNotifierRequestSucceded,
   SuccessLambdaResult,
   ZenQuote,
+  eventDecodeFailed,
 } from './Types';
+import { Result } from 'resulty';
+
+export const toTask = <E, T>(result: Result<E, T>): Task<E, T> =>
+  result.cata({
+    Ok: Task.succeed,
+    Err: Task.fail,
+  }) as Task<E, T>;
 
 const href: string = 'https://zenquotes.io/api/random';
 
@@ -22,7 +31,7 @@ const getZenQuote = (): Task<HttpError, ZenQuote> =>
 const buildRequestT = (slackMessage: SlackMessage): Task<HttpError, unknown> =>
   toHttpTask(
     post(slackMessage.slackWebhookUrl).withData({
-      text: slackMessage.zenQuote.quote,
+      text: `quoote: ${slackMessage.zenQuote.quote}, link: ${slackMessage.github.eventG.pullRequest.self.href}`,
       channel: slackMessage.slackChannel,
       username: slackMessage.slackUser,
     })
@@ -44,14 +53,19 @@ const postQuoteToSlack = (
 // *send direct message to slack notifying user that needs review label has been removed with PR name and link
 // (make another action that notifies user when PR is approved)
 
-export const slackZenQuote = (event: GithubEvent): Task<HandlerFail, SuccessLambdaResult> =>
-  Task.succeed<HandlerFail, {}>({})
-    .assign(
-      'event',
-      decodeEventObject(event).mapError<HandlerFail>((e) => e)
-    )
-    .assign('zenQuote', getZenQuote())
-    .assign('slackChannel', readVarT('SLACK_CHANNEL'))
-    .assign('slackUser', readVarT('SLACK_USER'))
-    .assign('slackWebhookUrl', readVarT('SLACK_WEBHOOK_URL'))
-    .andThen(postQuoteToSlack);
+const decodeEvent = (event: Github): Task<HandlerFail, Github> =>
+  toTask(githubDecoder.decodeAny(event).mapError<HandlerFail>(eventDecodeFailed));
+
+const messageIfApplicable = (github: Github): Task<HandlerFail, SuccessLambdaResult> =>
+  github.eventG.action === 'unlabeled' && github.eventG.label.name === 'invalid'
+    ? Task.succeed<HandlerFail, SuccessLambdaResult>(slackNotifierRequestSucceded('ok'))
+    : Task.succeed<HandlerFail, {}>({})
+        .assign('github', Task.succeed(github))
+        .assign('zenQuote', getZenQuote())
+        .assign('slackChannel', readVarT('SLACK_CHANNEL'))
+        .assign('slackUser', readVarT('SLACK_USER'))
+        .assign('slackWebhookUrl', readVarT('SLACK_WEBHOOK_URL'))
+        .andThen(postQuoteToSlack);
+
+export const slackZenQuote = (event: Github): Task<HandlerFail, SuccessLambdaResult> =>
+  decodeEvent(event).andThen(messageIfApplicable);
