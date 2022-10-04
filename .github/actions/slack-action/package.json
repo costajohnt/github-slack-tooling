@@ -1,0 +1,32 @@
+{
+  "name": "github-slack-tooling",
+  "version": "1.0.0",
+  "description": "Notifies developer when code review is complete on PR",
+  "main": "src/index.ts",
+  "author": "John Costa",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^2.7.1",
+    "typescript": "^4.8.3"
+  },
+  "dependencies": {
+    "@execonline-inc/appy": "^8.17.1",
+    "@execonline-inc/environment": "^5.5.1",
+    "@kofno/piper": "^4.3.0",
+    "@types/node": "^18.8.1",
+    "ajaxios": "^2.7.0",
+    "axios": "^0.25.0",
+    "jsonous": "^7.4.0",
+    "lambda-local": "^2.0.3",
+    "taskarian": "^5.1.0",
+    "yarn": "^1.22.19"
+  },
+  "engines": {
+    "node": "16.x",
+    "npm": "^5.6.0"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 100
+  }
+}
