@@ -106,6 +106,11 @@
   resolved "https://registry.yarnpkg.com/@kofno/piper/-/piper-4.3.0.tgz#001a8f81ec606df3c5d84edf59bff67042b4ea26"
   integrity sha512-H3hpwwuZGUtPxGkvVQ6tY4Sguvf+/urYJZTeJ373ABY3We+TE0ZtqwjOLe/oqg3RwEjjnBI0xkbgMcu1mBjaLw==
 
+"@types/node@^18.8.1":
+  version "18.8.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.8.1.tgz#33e6759935f7a82821b72fb936e66f6b99a36173"
+  integrity sha512-vuYaNuEIbOYLTLUAJh50ezEbvxrD43iby+lpUA2aa148Nh5kX/AVO/9m1Ahmbux2iU5uxJTNF9g2Y+31uml7RQ==
+
 ajaxian@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/ajaxian/-/ajaxian-4.4.0.tgz#a87344952a91c2ad78467c9907b2436bb6849a23"

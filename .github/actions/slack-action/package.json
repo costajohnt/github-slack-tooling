@@ -13,11 +13,12 @@
     "@execonline-inc/appy": "^8.17.1",
     "@execonline-inc/environment": "^5.5.1",
     "@kofno/piper": "^4.3.0",
+    "@types/node": "^18.8.1",
     "ajaxios": "^2.7.0",
     "axios": "^0.25.0",
     "jsonous": "^7.4.0",
-    "taskarian": "^5.1.0",
     "lambda-local": "^2.0.3",
+    "taskarian": "^5.1.0",
     "yarn": "^1.22.19"
   },
   "engines": {
