@@ -59,15 +59,15 @@ const decodeEvent = (event: unknown): Task<HandlerFail, Github> =>
   toTask(githubDecoder.decodeAny(event).mapError<HandlerFail>(eventDecodeFailed));
 
 const messageIfApplicable = (github: Github): Task<HandlerFail, SuccessLambdaResult> =>
-  // github.eventG.action === 'unlabeled' && github.eventG.label.name === 'invalid'
-  //   ? Task.succeed<HandlerFail, SuccessLambdaResult>(slackNotifierRequestSucceded('ok')) :
-  Task.succeed<HandlerFail, {}>({})
-    .assign('github', Task.succeed(github))
-    .assign('zenQuote', getZenQuote())
-    .assign('slackChannel', readVarT('SLACK_CHANNEL'))
-    .assign('slackUser', readVarT('SLACK_USER'))
-    .assign('slackWebhookUrl', readVarT('SLACK_WEBHOOK_URL'))
-    .andThen(postQuoteToSlack);
+  github.eventG.action === 'unlabeled' && github.eventG.label.name === 'invalid'
+    ? Task.succeed<HandlerFail, SuccessLambdaResult>(slackNotifierRequestSucceded('ok'))
+    : Task.succeed<HandlerFail, {}>({})
+        .assign('github', Task.succeed(github))
+        .assign('zenQuote', getZenQuote())
+        .assign('slackChannel', readVarT('SLACK_CHANNEL'))
+        .assign('slackUser', readVarT('SLACK_USER'))
+        .assign('slackWebhookUrl', readVarT('SLACK_WEBHOOK_URL'))
+        .andThen(postQuoteToSlack);
 
 const sampleEvent = {
   token: '***',
@@ -654,12 +654,11 @@ const sampleEvent = {
   action: '__run',
 };
 
-export const slackZenQuote = (event: unknown) =>
-  decodeEvent(event)
-    .andThen(messageIfApplicable)
-    .fork(
-      (e) => e.kind,
-      (_) => 'ok'
-    );
+function toPromise<E, T>(task: Task<E, T>) {
+  return new Promise<T>((resolve, reject) => task.fork(reject, resolve));
+}
+
+export const slackZenQuote = async (event: unknown) =>
+  toPromise(decodeEvent(event).andThen(messageIfApplicable));
 
 slackZenQuote(sampleEvent);
